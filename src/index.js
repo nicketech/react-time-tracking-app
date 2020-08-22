@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
+import helpers from './helpers.js';
 
 
 class TimerDashboard extends React.Component {
@@ -16,6 +17,25 @@ class TimerDashboard extends React.Component {
         </div>
       </div>
     );
+  }
+}
+
+
+class ToggleableTimerForm extends React.Component {
+  render() {
+    if (this.props.isOpen) {
+      return (
+        <TimerForm />
+      )
+    } else {
+      return (
+        <div className='ui basic content center aligned segment'>
+          <button className='ui basic button icon'>
+            <i className='plus icon' />
+          </button>
+        </div>
+      )
+    }
   }
 }
 
@@ -36,7 +56,7 @@ class EditableTimerList extends React.Component {
           project='World Domination'
           elapsed='3890985'
           runningSince={null}
-          editFormOpen={true}
+          editFormOpen={false}
         />
       </div>
     )
@@ -55,7 +75,7 @@ class EditableTimer extends React.Component {
       )
     } else {
       return (
-        <TimerForm 
+        <Timer 
           title={this.props.title}
           project={this.props.project}
           elapsed={this.props.elapsed}
@@ -63,6 +83,41 @@ class EditableTimer extends React.Component {
         />
       )
     }
+  }
+}
+
+
+class Timer extends React.Component {
+  render() {
+    const elapsedString = helpers.renderElapsedString(this.props.elapsed);
+    return (
+      <div className='ui centered card'>
+        <div className='content'>
+          <div className='header'>
+            {this.props.title}
+          </div>
+          <div className='meta'>
+            {this.props.project}
+          </div>
+          <div className='center aligned description'>
+            <h2>
+              {elapsedString}
+            </h2>
+          </div>
+          <div className='extra content'>
+            <span className='right floated edit icon'>
+              <i className='edit icon' />
+            </span>
+            <span className='right floated trash icon'>
+              <i className='trash icon' />
+            </span>
+          </div>
+        </div>
+        <div className='ui bottom attached blue basic button'>
+          Start
+        </div>
+      </div>
+    )
   }
 }
 
@@ -83,10 +138,10 @@ class TimerForm extends React.Component {
               <input type='text' defaultValue={this.props.project} />
             </div>
             <div className='ui two bottom attached buttons'>
-              <button className='ui basic blue buttons'>
+              <button className='ui bottom attached blue basic button'>
                 {submitText}
               </button>
-              <button className='ui basic blue buttons'>
+              <button className='ui bottom attached red basic button'>
                 Cancel
               </button>
             </div>
@@ -98,10 +153,7 @@ class TimerForm extends React.Component {
 }
 
 
-
 ReactDOM.render(
-  <React.StrictMode>
-    <TimerDashboard />
-  </React.StrictMode>,
+    <TimerDashboard />,
   document.getElementById('root')
 );
