@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 import helpers from './helpers.js';
-
+import uuid from "uuid";
 
 class TimerDashboard extends React.Component {
   state = {
@@ -32,9 +32,7 @@ class TimerDashboard extends React.Component {
           <EditableTimerList 
             timers={this.state.timers}
           />
-          <ToggleableTimerForm
-            isOpen={true}
-          />
+          <ToggleableTimerForm />
         </div>
       </div>
     );
@@ -43,15 +41,30 @@ class TimerDashboard extends React.Component {
 
 
 class ToggleableTimerForm extends React.Component {
+  constructor(props) {
+    super (props);
+    this.state = {
+      isOpen: false,
+    }
+    this.handleFormOpen.bind(this);
+  }
+
+  handleFormOpen = () => {
+    this.setState({ isOpen: true });
+  }
+
   render() {
-    if (this.props.isOpen) {
+    if (this.state.isOpen) {
       return (
         <TimerForm />
       )
     } else {
       return (
         <div className='ui basic content center aligned segment'>
-          <button className='ui basic button icon'>
+          <button
+            className='ui basic button icon'
+            onClick={this.handleFormOpen}
+          >
             <i className='plus icon' />
           </button>
         </div>
@@ -63,7 +76,7 @@ class ToggleableTimerForm extends React.Component {
 
 class EditableTimerList extends React.Component {
   render() {
-    const timers = this.props.timers.map( (timer) => {
+    const timers = this.props.timers.map( (timer) => (
       <EditableTimer
         key={timer.id}
         id={timer.id}
@@ -72,7 +85,7 @@ class EditableTimerList extends React.Component {
         elapsed={timer.elapsed}
         runningSince={timer.runningSince}
       />
-    })
+    ));
     return (
       <div id='timers'>
         {timers}
@@ -83,17 +96,22 @@ class EditableTimerList extends React.Component {
 
 
 class EditableTimer extends React.Component {
+  state = {
+    editFormOpen: false,
+  };
   render() {
-    if (this.props.editFormOpen) {
+    if (this.state.editFormOpen) {
       return (
-        <TimerForm 
+        <TimerForm
+          id={this.props.id}  
           title={this.props.title}
           project={this.props.project}
         />
       )
     } else {
       return (
-        <Timer 
+        <Timer
+          id={this.props.id}
           title={this.props.title}
           project={this.props.project}
           elapsed={this.props.elapsed}
@@ -141,6 +159,18 @@ class Timer extends React.Component {
 
 
 class TimerForm extends React.Component {
+  state = {
+    title: this.props.title || '',
+    project: this.props.project || '',
+  }
+
+  handleTitleChange = (e) => {
+    this.setState({ title: e.target.value })
+  }
+
+  handleProjectChange = (e) => {
+    this.setState({ project: e.target.value })
+  }
   render() {
     const submitText = this.props.title ? 'Update' : 'Create';
     return (
@@ -149,11 +179,18 @@ class TimerForm extends React.Component {
           <div className='ui form'>
             <div className='field'>
               <label>Title</label>
-              <input type='text' defaultValue={this.props.title} />
+              <input type='text'
+                value={this.state.title}
+                onChange={this.handleTitleChange}
+              />
             </div>
             <div className='field'>
               <label>Project</label>
-              <input type='text' defaultValue={this.props.project} />
+              <input 
+                type='text'
+                value={this.state.project} 
+                onChange={this.handleProjectChange}
+              />
             </div>
             <div className='ui two bottom attached buttons'>
               <button className='ui bottom attached blue basic button'>
